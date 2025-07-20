@@ -1,5 +1,4 @@
-ARG CACHE_BREAK=20250721
-ENV CACHE_BREAK=$CACHE_BREAK
+
 
 FROM python:3.10-slim-bookworm
 
