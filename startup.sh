@@ -1,7 +1,9 @@
 #!/bin/bash
 
-echo ">> FETCHING UPSTREAM..."
-git clone https://github.com/AsmSafone/MusicPlayer /MusicPlayer
+
+echo ">> FETCHING YOUR OWN REPO..."
+git clone https://github.com/MKDBGNS/MusicPlayer /MusicPlayer
+
 
 echo ">> INSTALLING REQUIREMENTS..."
 cd /MusicPlayer
