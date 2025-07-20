@@ -211,7 +211,7 @@ async def mute_vc(_, message: Message, lang):
     try:
         await pytgcalls.mute_stream(chat_id)
         k = await message.reply_text(lang["muted"])
-    except (NoActiveGroupCall, GroupCallNotFound, NotInCallError):
+   except (NoActiveGroupCall, NotInCallError):
         k = await message.reply_text(lang["notActive"])
     await delete_messages([message, k])
 
@@ -228,7 +228,7 @@ async def unmute_vc(_, message: Message, lang):
     try:
         await pytgcalls.unmute_stream(chat_id)
         k = await message.reply_text(lang["unmuted"])
-    except (NoActiveGroupCall, GroupCallNotFound, NotInCallError):
+    except (NoActiveGroupCall, NotInCallError):
         k = await message.reply_text(lang["notActive"])
     await delete_messages([message, k])
 
@@ -243,7 +243,7 @@ async def pause_vc(_, message: Message, lang):
     try:
         await pytgcalls.pause_stream(chat_id)
         k = await message.reply_text(lang["paused"])
-    except (NoActiveGroupCall, GroupCallNotFound, NotInCallError):
+    except (NoActiveGroupCall, NotInCallError):
         k = await message.reply_text(lang["notActive"])
     await delete_messages([message, k])
 
@@ -260,7 +260,7 @@ async def resume_vc(_, message: Message, lang):
     try:
         await pytgcalls.resume_stream(chat_id)
         k = await message.reply_text(lang["resumed"])
-    except (NoActiveGroupCall, GroupCallNotFound, NotInCallError):
+    except (NoActiveGroupCall, NotInCallError):
         k = await message.reply_text(lang["notActive"])
     await delete_messages([message, k])
 
@@ -546,7 +546,7 @@ async def update_restart(_, message: Message, lang):
     for chat in chats:
         try:
             await pytgcalls.leave_call(chat)
-        except (NoActiveGroupCall, GroupCallNotFound, NotInCallError):
+            except (NoActiveGroupCall, NotInCallError):
             pass
     await stats.edit_text(lang["restart"])
     shutil.rmtree("downloads", ignore_errors=True)
@@ -582,7 +582,7 @@ async def stream_end(_, update: Update, lang):
                 set_group(chat_id, is_playing=False, now_playing=None)
                 try:
                     await pytgcalls.leave_call(chat_id)
-                except (NoActiveGroupCall, GroupCallNotFound, NotInCallError):
+                except (NoActiveGroupCall, NotInCallError):
                     pass
 
 
