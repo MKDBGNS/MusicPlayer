@@ -2,7 +2,6 @@
 
 FROM python:3.10-slim-bookworm
 
-RUN pip install --no-cache-dir -r requirements.txt
 
 # Updating Packages
 
@@ -15,7 +14,7 @@ COPY requirements.txt /requirements.txt
 # Installing Requirements
 RUN cd /
 RUN pip3 install --upgrade pip
-RUN pip3 install -U -r requirements.txt
+RUN pip3 install --no-cache-dir -U -r requirements.txt
 
 # Setting up working directory
 RUN mkdir /MusicPlayer
