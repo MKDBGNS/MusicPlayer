@@ -603,7 +603,7 @@ async def closed_vc(_, update: Update):
         clear_queue(chat_id)
 
 
-client.start()
+
 pytgcalls.run()
 if __name__ == "__main__":
     client.start()
