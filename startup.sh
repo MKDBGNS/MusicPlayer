@@ -2,7 +2,7 @@
 
 
 echo ">> FETCHING YOUR OWN REPO..."
-git clone https://github.com/MKDBGNS/MusicPlayer /MusicPlayer
+git clone https://github.com/MKDBGNS/MusicPlayer
 
 
 echo ">> INSTALLING REQUIREMENTS..."
