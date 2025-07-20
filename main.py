@@ -37,6 +37,10 @@ from core import (
     extract_args, start_stream, shuffle_queue, delete_messages,
     get_spotify_playlist, get_youtube_playlist)
 
+@client.on_message(filters.command("test"))
+async def test_handler(client, message):
+    print("🔔 Received /test command")
+    await message.reply_text("✅ Bot is alive!")
 
 REPO = """
 🤖 **Music Player**
