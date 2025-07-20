@@ -27,8 +27,8 @@ from pyrogram import Client, filters
 from pytgcalls.types import Update, ChatUpdate
 from pytgcalls.types.stream import StreamAudioEnded, StreamVideoEnded
 from core.decorators import language, register, only_admins, handle_error
-from pytgcalls.exceptions import (
-    NotInCallError, GroupCallNotFound, NoActiveGroupCall)
+from pytgcalls.exceptions import NotInCallError
+
 from core import (
     app, ytdl, safone, search, is_sudo, is_admin, get_group, get_queue,
     pytgcalls, set_group, set_title, all_groups, clear_queue, check_yt_url,
@@ -196,7 +196,7 @@ async def skip_track(_, message: Message, lang):
             try:
                 await pytgcalls.leave_call(chat_id)
                 k = await message.reply_text(lang["queueEmpty"])
-            except (NoActiveGroupCall, GroupCallNotFound, NotInCallError):
+           except NotInCallError:
                 k = await message.reply_text(lang["notActive"])
             await delete_messages([message, k])
 
