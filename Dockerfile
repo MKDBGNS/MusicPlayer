@@ -20,9 +20,7 @@ RUN pip3 install --no-cache-dir -U -r requirements.txt
 RUN mkdir /MusicPlayer
 WORKDIR /MusicPlayer
 
-# 🚀 Preparing for the Startup
-COPY startup.sh /startup.sh
-RUN chmod +x /startup.sh
 
+python3 main.py
 # 🎶 Running Music Player Bot
-CMD ["/bin/bash", "/startup.sh"]
+CMD ["python3", "main.py"]
