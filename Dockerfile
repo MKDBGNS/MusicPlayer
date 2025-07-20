@@ -3,6 +3,8 @@ FROM python:3.9-slim-buster
 # Updating Packages
 RUN apt update && apt upgrade -y
 RUN apt install git curl python3-pip ffmpeg -y
+RUN apt-get update && apt-get install -y \
+    git curl python3-pip ffmpeg
 
 # Copying Requirements
 COPY requirements.txt /requirements.txt
