@@ -17,10 +17,11 @@ RUN pip3 install --upgrade pip
 RUN pip3 install --no-cache-dir -U -r requirements.txt
 
 # 🗂️ Setting up working directory
-RUN mkdir /MusicPlayer
-WORKDIR /MusicPlayer
+#RUN mkdir /MusicPlayer
+#WORKDIR /MusicPlayer
 
 
 
 # 🎶 Running Music Player Bot
-CMD ["/bin/bash", "/startup.sh"]
+#CMD ["/bin/bash", "/startup.sh"]
+CMD ["python3", "/MusicPlayer/main.py"]
