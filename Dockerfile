@@ -24,4 +24,4 @@ RUN pip3 install --no-cache-dir -U -r requirements.txt
 
 # 🎶 Running Music Player Bot
 #CMD ["/bin/bash", "/startup.sh"]
-CMD ["python3", "/MusicPlayer/main.py"]
+CMD ["python3", "main.py"]
