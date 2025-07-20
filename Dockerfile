@@ -21,6 +21,6 @@ RUN mkdir /MusicPlayer
 WORKDIR /MusicPlayer
 
 
-python3 main.py
+
 # 🎶 Running Music Player Bot
 CMD ["python3", "main.py"]
