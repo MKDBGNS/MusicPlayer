@@ -605,8 +605,10 @@ async def closed_vc(_, update: Update):
 
 
 pytgcalls.run()
-if __name__ == "__main__":
-    client.start()
-    print("✅ Bot is online and listening for commands...")
-    idle()
+from pyrogram import idle
 
+if __name__ == "__main__":
+    print("🔌 Starting bot…")
+    client.start()
+    print("✅ Bot is online and listening for commands!")
+    idle()
