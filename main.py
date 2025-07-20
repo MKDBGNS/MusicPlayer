@@ -280,7 +280,7 @@ async def leave_vc(_, message: Message, lang):
     try:
         await pytgcalls.leave_call(chat_id)
         k = await message.reply_text(lang["leaveVC"])
-    except (NoActiveGroupCall, GroupCallNotFound, NotInCallError):
+    except (NoActiveGroupCall, NotInCallError):
         k = await message.reply_text(lang["notActive"])
     await delete_messages([message, k])
 
