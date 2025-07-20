@@ -546,7 +546,7 @@ async def update_restart(_, message: Message, lang):
     for chat in chats:
         try:
             await pytgcalls.leave_call(chat)
-            except (NoActiveGroupCall, NotInCallError):
+        except (NoActiveGroupCall, NotInCallError):
             pass
     await stats.edit_text(lang["restart"])
     shutil.rmtree("downloads", ignore_errors=True)
