@@ -31,6 +31,51 @@ async def test_handler(client, message):
     print("🔔 Received /test command")
     await message.reply_text("✅ Bot is alive!")
 
+@client.on_message(filters.command("start", config.PREFIXES) & ~filters.bot)
+@language
+@handle_error
+async def start(_, message: Message, lang):
+    await message.reply_text(lang["startText"] % message.from_user.mention)
+ 
+@client.on_message(filters.command("help", config.PREFIXES) & ~filters.bot)
+@language
+@handle_error
+async def help(_, message: Message, lang):
+    await message.reply_text(lang["helpText"].replace("<prefix>", config.PREFIXES[0]))
+
+@client.on_message(filters.command(["p", "play"], config.PREFIXES) & ~filters.private)
+@register
+@language
+@handle_error
+async def play_stream(_, message: Message, lang):
+    chat_id = message.chat.id
+    group = get_group(chat_id)
+    if group["admins_only"]:
+        check = await is_admin(message)
+        if not check:
+            k = await message.reply_text(lang["notAllowed"])
+            return await delete_messages([message, k])
+    song = await search(message)
+    if song is None:
+        k = await message.reply_text(lang["notFound"])
+        return await delete_messages([message, k])
+    ok, status = await song.parse()
+    if not ok:
+        raise Exception(status)
+    if not group["is_playing"]:
+        set_group(chat_id, is_playing=True, now_playing=song)
+        await start_stream(song, lang)
+        await delete_messages([message])
+    else:
+        queue = get_queue(chat_id)
+        await queue.put(song)
+        k = await message.reply_text(
+            lang["addedToQueue"] % (song.title, song.source, len(queue)),
+            disable_web_page_preview=True,
+        )
+        await delete_messages([message, k])
+
+
 if __name__ == "__main__":
     print("🔌 START")
     client.start()
