@@ -609,6 +609,10 @@ async def closed_vc(_, update: Update):
 
 
 pytgcalls.run()
+import os
+print("🔑 BOT_TOKEN:", bool(os.getenv("BOT_TOKEN")))
+print("🔑 API_ID/API_HASH:", os.getenv("API_ID"), os.getenv("API_HASH"))
+
 from pyrogram import idle
 
 if __name__ == "__main__":
