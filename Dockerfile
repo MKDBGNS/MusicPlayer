@@ -23,4 +23,4 @@ WORKDIR /MusicPlayer
 
 
 # 🎶 Running Music Player Bot
-CMD ["python3", "main.py"]
+CMD ["/bin/bash", "/startup.sh"]
