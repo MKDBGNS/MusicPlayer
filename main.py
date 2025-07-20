@@ -196,7 +196,7 @@ async def skip_track(_, message: Message, lang):
             try:
                 await pytgcalls.leave_call(chat_id)
                 k = await message.reply_text(lang["queueEmpty"])
-           except NotInCallError:
+            except NotInCallError:
                 k = await message.reply_text(lang["notActive"])
             await delete_messages([message, k])
 
@@ -211,7 +211,7 @@ async def mute_vc(_, message: Message, lang):
     try:
         await pytgcalls.mute_stream(chat_id)
         k = await message.reply_text(lang["muted"])
-   except (NoActiveGroupCall, NotInCallError):
+    except (NoActiveGroupCall, NotInCallError):
         k = await message.reply_text(lang["notActive"])
     await delete_messages([message, k])
 
