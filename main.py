@@ -25,7 +25,7 @@ from pyrogram.types import Message
 from pytgcalls import filters as fl
 from pyrogram import Client, filters
 from pytgcalls.types import Update, ChatUpdate
-from pytgcalls.types.stream import StreamAudioEnded, StreamVideoEnded
+#from pytgcalls.types.stream import StreamAudioEnded, StreamVideoEnded
 from core.decorators import language, register, only_admins, handle_error
 from pytgcalls.exceptions import (
     NotInCallError, GroupCallNotFound, NoActiveGroupCall)
