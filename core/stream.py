@@ -59,7 +59,7 @@ app = Client(
 pytgcalls = PyTgCalls(app)
 
 
-async def start_stream(song: Song, lang: dict):
+async def start_stream(chat_id: int, song: Song, lang: dict):
     chat = song.request_msg.chat
 
     # Remove old stream message if exists
@@ -74,7 +74,11 @@ async def start_stream(song: Song, lang: dict):
     # Retry logic for GroupCall errors
     for _ in range(3):
         try:
-            await pytgcalls.play(chat.id, get_quality(song))
+            await pytgcalls.join_group_call(
+                chat_id,
+                get_quality(song),
+                stream_type=StreamType().local_stream)
+
             break
         except NotInCallError:
             peer = await app.resolve_peer(chat.id)
