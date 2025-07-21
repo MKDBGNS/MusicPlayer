@@ -74,7 +74,7 @@ async def start_stream(song: Song, lang: dict):
     # Retry logic for GroupCall errors
     for _ in range(3):
         try:
-            await pytgcalls.play(chat_id, get_quality(song))
+            await pytgcalls.play(chat.id, get_quality(song))
 
 
             break
