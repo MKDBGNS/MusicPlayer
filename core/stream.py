@@ -75,7 +75,7 @@ async def start_stream(chat_id: int, song: Song, lang: dict):
     for _ in range(3):
         try:
             await pytgcalls.join_group_call(
-                chat_id,
+                chat.id,
                 get_quality(song),
                 stream_type=StreamType().local_stream)
 
