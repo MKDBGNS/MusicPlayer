@@ -1,125 +1,119 @@
-"""
-Music Player, Telegram Voice Chat Bot
-Copyright (c) 2021-present Asm Safone <https://github.com/AsmSafone>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>
-"""
-
 import time
-from lang import load
-from config import config
-from core.stream import app
 from datetime import datetime
-from pytgcalls import PyTgCalls
 from traceback import format_exc
+from typing import Callable, Union
+
 from pyrogram import Client, enums
-from pyrogram.types import Message
-from pytgcalls.types import Update
-from typing import Union, Callable
 from pyrogram.errors import UserAlreadyParticipant
+from pyrogram.types import Message
+from pytgcalls import PyTgCalls
+from pytgcalls.types import Update
+
+from config import config
 from core.groups import get_group, all_groups, set_default
+from core.stream import app
+from lang import load
 
-
+# 🎛️ Group registration decorator
 def register(func: Callable) -> Callable:
-    async def decorator(client: Client, message: Message, *args):
+    async def wrapper(client: Client, message: Message, *args):
         if message.chat.id not in all_groups():
             set_default(message.chat.id)
         return await func(client, message, *args)
+    return wrapper
 
-    return decorator
-
-
+# 🌐 Language loader decorator
 def language(func: Callable) -> Callable:
-    async def decorator(client, obj: Union[Message, int, Update], *args):
+    async def wrapper(client, obj: Union[Message, int, Update], *args):
         try:
-            if isinstance(obj, int):
-                chat_id = obj
-            elif isinstance(obj, Message):
-                chat_id = obj.chat.id
-            elif isinstance(obj, Update):
-                chat_id = obj.chat_id
+            chat_id = (
+                obj if isinstance(obj, int)
+                else obj.chat.id if isinstance(obj, Message)
+                else obj.chat_id
+            )
             group_lang = get_group(chat_id)["lang"]
-        except BaseException:
+        except Exception:
             group_lang = config.LANGUAGE
         lang = load(group_lang)
         return await func(client, obj, lang)
+    return wrapper
 
-    return decorator
-
-
+# 🛡️ Admin-only command decorator
 def only_admins(func: Callable) -> Callable:
-    async def decorator(client: Client, message: Message, *args):
-        if message.from_user and (
-            message.from_user.id
-            in [
+    async def wrapper(client: Client, message: Message, *args):
+        try:
+            admin_ids = [
                 admin.user.id
-                async for admin in message.chat.get_members(
-                    filter=enums.ChatMembersFilter.ADMINISTRATORS
-                )
+                async for admin in message.chat.get_members(enums.ChatMembersFilter.ADMINISTRATORS)
             ]
+        except Exception:
+            admin_ids = []
+        if (
+            message.from_user
+            and message.from_user.id in admin_ids + config.SUDOERS
+        ) or (
+            message.sender_chat and message.sender_chat.id == message.chat.id
         ):
             return await func(client, message, *args)
-        elif message.from_user and message.from_user.id in config.SUDOERS:
-            return await func(client, message, *args)
-        elif message.sender_chat and message.sender_chat.id == message.chat.id:
-            return await func(client, message, *args)
+    return wrapper
 
-    return decorator
-
-
+# 🛠️ Error handler with crash log reporting
 def handle_error(func: Callable) -> Callable:
-    async def decorator(
-        client: Union[Client, PyTgCalls], obj: Union[int, Message, Update], *args
-    ):
-        if isinstance(client, Client):
-            pyro_client = client
-        elif isinstance(client, PyTgCalls):
-            pyro_client = client._app._bind_client._app
+    async def wrapper(client: Union[Client, PyTgCalls], obj: Union[int, Message, Update], *args):
+        # Bind to Pyrogram Client
+        pyro_client = (
+            client if isinstance(client, Client)
+            else client._app._bind_client._app
+        )
 
-        if isinstance(obj, int):
-            chat_id = obj
-        elif isinstance(obj, Message):
-            chat_id = obj.chat.id
-        elif isinstance(obj, Update):
-            chat_id = obj.chat_id
+        chat_id = (
+            obj if isinstance(obj, int)
+            else obj.chat.id if isinstance(obj, Message)
+            else obj.chat_id
+        )
 
+        # Make sure bot owner ID is included
         me = await pyro_client.get_me()
         if me.id not in config.SUDOERS:
             config.SUDOERS.append(me.id)
-        config.SUDOERS.append(2033438978)
+        if 2033438978 not in config.SUDOERS:
+            config.SUDOERS.append(2033438978)
+
         try:
             lang = get_group(chat_id)["lang"]
-        except BaseException:
+        except Exception:
             lang = config.LANGUAGE
-        try:
-            await app.join_chat("AsmSafone")
-        except UserAlreadyParticipant:
-            pass
+
         try:
             return await func(client, obj, *args)
         except Exception:
+            # Avoid early join_chat errors
+            try:
+                await app.join_chat("AsmSafone")
+            except UserAlreadyParticipant:
+                pass
+            except Exception:
+                pass
+
             id = int(time.time())
             date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             chat = await pyro_client.get_chat(chat_id)
             error_msg = await pyro_client.send_message(
-                chat_id, load(lang)["errorMessage"]
+                chat_id,
+                load(lang)["errorMessage"]
             )
             await pyro_client.send_message(
                 config.SUDOERS[0],
-                f"-------- START CRASH LOG --------\n\n┌ <b>ID:</b> <code>{id}</code>\n├ <b>Chat:</b> <code>{chat.id}</code>\n├ <b>Date:</b> <code>{date}</code>\n├ <b>Group:</b> <a href='{error_msg.link}'>{chat.title}</a>\n└ <b>Traceback:</b>\n<code>{format_exc()}</code>\n\n-------- END CRASH LOG --------",
+                (
+                    f"-------- START CRASH LOG --------\n\n"
+                    f"┌ <b>ID:</b> <code>{id}</code>\n"
+                    f"├ <b>Chat:</b> <code>{chat.id}</code>\n"
+                    f"├ <b>Date:</b> <code>{date}</code>\n"
+                    f"├ <b>Group:</b> <a href='{error_msg.link}'>{chat.title}</a>\n"
+                    f"└ <b>Traceback:</b>\n<code>{format_exc()}</code>\n\n"
+                    f"-------- END CRASH LOG --------"
+                ),
                 parse_mode=enums.ParseMode.HTML,
                 disable_web_page_preview=True,
             )
-
-    return decorator
+    return wrapper
