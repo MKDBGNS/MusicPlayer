@@ -36,7 +36,8 @@ async def test_handler(client, message):
     print("🔔 Received /test command")
     await message.reply_text("✅ Bot is alive!")
 
-@client.on_message(filters.command("start", config.PREFIXES) & ~filters.bot)
+#@client.on_message(filters.command("start", config.PREFIXES) & ~filters.bot)
+@client.on_message(filters.command("start"))
 @language
 @handle_error
 async def start(_, message: Message, lang):
