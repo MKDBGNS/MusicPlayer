@@ -58,6 +58,10 @@ app = Client(
 # PyTgCalls Client
 pytgcalls = PyTgCalls(app)
 
+def stream_end(chat_id: int):
+    print(f"✅ Stream ended in chat {chat_id}")
+    asyncio.create_task(pytgcalls.leave_group_call(chat_id))
+
 
 async def start_stream(song: Song, lang: dict):
     chat = song.request_msg.chat
