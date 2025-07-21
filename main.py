@@ -19,14 +19,13 @@ from core import (
     extract_args, start_stream, shuffle_queue, delete_messages,
     get_spotify_playlist, get_youtube_playlist)
 
- bot = Client(
+bot = Client(
         "MusicPlayer",
         api_id=config.API_ID,
         api_hash=config.API_HASH,
         bot_token=config.BOT_TOKEN,
-        in_memory=True,
-    )
-    client = bot
+        in_memory=True,)
+client = bot
 @client.on_message(filters.command("ping"))
 async def ping(c, m):
     print("↔ Got /ping")
