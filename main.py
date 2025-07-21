@@ -83,6 +83,12 @@ async def play_stream(_, message: Message, lang):
 
 if __name__ == "__main__":
     print("🔌 START")
+
     client.start()
-    print("✅ OK", client.me.username)
+    print("✅ Pyrogram Started:", client.me.username)
+
+    pytgcalls.start()  # 👈 This is missing!
+    print("🎧 PyTgCalls Started")
+
     idle()
+
