@@ -69,7 +69,7 @@ async def play_stream(_, message: Message, lang):
         raise Exception(status)
     if not group["is_playing"]:
         set_group(chat_id, is_playing=True, now_playing=song)
-        await start_stream(song, lang)
+        await start_stream(chat_id,song, lang)
         await delete_messages([message])
     else:
         queue = get_queue(chat_id)
@@ -119,7 +119,7 @@ async def live_stream(_, message: Message, lang):
         raise Exception(status)
     if not group["is_playing"]:
         set_group(chat_id, is_playing=True, now_playing=song)
-        await start_stream(song, lang)
+        await start_stream(chat_id,song, lang)
         await delete_messages([message])
     else:
         queue = get_queue(chat_id)
@@ -141,7 +141,7 @@ async def skip_track(_, message: Message, lang):
     chat_id = message.chat.id
     group = get_group(chat_id)
     if group["loop"]:
-        await start_stream(group["now_playing"], lang)
+        await start_stream(chat_id,group["now_playing"], lang)
     else:
         queue = get_queue(chat_id)
         if len(queue) > 0:
@@ -151,7 +151,7 @@ async def skip_track(_, message: Message, lang):
                 if not ok:
                     raise Exception(status)
             set_group(chat_id, now_playing=next_song)
-            await start_stream(next_song, lang)
+            await start_stream(chat_id,next_song, lang)
             await delete_messages([message])
         else:
             set_group(chat_id, is_playing=False, now_playing=None)
@@ -427,7 +427,7 @@ async def import_queue(_, message: Message, lang):
         ok, status = await song.parse()
         if not ok:
             raise Exception(status)
-        await start_stream(song, lang)
+        await start_stream(chat_id,song, lang)
         for _song in temp_queue[1:]:
             await queue.put(_song)
     k = await message.reply_text(lang["queueImported"] % len(temp_queue))
@@ -479,7 +479,7 @@ async def import_playlist(_, message: Message, lang):
         ok, status = await song.parse()
         if not ok:
             raise Exception(status)
-        await start_stream(song, lang)
+        await start_stream(chat_id,song, lang)
         async for _song in temp_queue:
             await queue.put(_song)
         queue.get_nowait()
@@ -519,7 +519,7 @@ async def stream_end(_, update: Update, lang):
         chat_id = update.chat_id
         group = get_group(chat_id)
         if group["loop"]:
-            await start_stream(group["now_playing"], lang)
+            await start_stream(chat_id,group["now_playing"], lang)
         else:
             queue = get_queue(chat_id)
             if len(queue) > 0:
@@ -529,7 +529,7 @@ async def stream_end(_, update: Update, lang):
                     if not ok:
                         raise Exception(status)
                 set_group(chat_id, now_playing=next_song)
-                await start_stream(next_song, lang)
+                await start_stream(chat_id,song, lang)
             else:
                 if safone.get(chat_id) is not None:
                     try:
