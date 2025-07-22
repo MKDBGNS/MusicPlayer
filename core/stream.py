@@ -65,6 +65,15 @@ def stream_end(chat_id: int):
 
 async def start_stream(song: Song, lang: dict):
     chat = song.request_msg.chat
+    # Validate audio metadata
+    audio = getattr(song.request_msg.reply_to_message, "audio", None)
+    if not audio:
+        await song.request_msg.reply("❌ Please reply to a valid audio file (MP3/M4A).")
+    return
+    if not audio.duration or audio.duration < 1:
+        await song.request_msg.reply("⏱️ Could not detect duration. Try re-uploading the track.")
+    return
+
 
     # Remove old stream message if exists
     if safone.get(chat.id):
